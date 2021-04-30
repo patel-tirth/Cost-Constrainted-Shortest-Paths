@@ -20,8 +20,8 @@ int main(int argc, char *argv[]){
     }
   }
 
-  std::cout << "\nADJACENCY-LIST REPRESENTATION:\n\n";
-  g.display();
+//   std::cout << "\nADJACENCY-LIST REPRESENTATION:\n\n";
+//   g.display();
   g.cpath(argv[2],argv[3],argv[4]);
 //   std::cout << "\nEND ADJACENCY LIST:\n\n";
 

@@ -810,7 +810,7 @@ class graph {
       return true;  // placeholder
     }
    // return a.first > b.first || (a.first == b.first && a.second < b.second)
-    struct myQ{
+  struct myQ{
     const bool operator()( tuple<double, double, string> const& tpl1, tuple<double, double, string> const& tpl2 )
     const noexcept
     {
@@ -850,70 +850,52 @@ class graph {
                              
                 if(vertices[e.vertex_id].sig.empty() ) {    // if trade off curve for neighbor is empty
                       pq.push(tpl(cost1+cost2,time1+time2,v));
-                      // cout << cost1+cost2 << " " << time1+time2 << " " << v<<endl;
-                      // vertices[e.vertex_id].sig.push_back(signature(cost1+cost2, time1+time2));
           
                 }
             }
-            // int u;
-
-      // for(u=0; u<vertices.size(); u++) {
-        // std::cout << vertices[u].name << " : ";
-        // cout << "shortest path from" << src << " to " << dest << " is "<< endl;
-       
-      // }
-            // for(edge &e : vertices[i].outgoing){
-
-            // }
-                // else if (!vertices[stoi(v)].sig.empty()){
-                //       if(vertices[stoi(v)].sig.back().time > (time1+time2) ){
-                //         pq.push(tpl(cost1+cost2,time1+time2,v));
-                //         vertices[stoi(v)].sig.push_back(signature(cost1+cost2, time1+time2));
-                //       }
-                // }
-                // (vertices[stoi(v)].sig.back().time > (time1+time2) )
-              //  if (!vertices[stoi(v)].sig.empty()  )
-              //   {
-              //        pq.push(tpl(cost1+cost2,time1+time2,v));
-              //     if((time1+time2) < vertices[stoi(v)].sig.back().time){
-                         
-              //               vertices[stoi(v)].sig.push_back(signature(cost1+cost2, time1+time2));
-              //     }
-              //   }
-                // else {
-                //   if(time1 + time2 < time2)
-                // }
-                // else if(vertices[stoi(v)].sig.size() != 0 ) // trade off curve is not empty.. 
-                // {
-                //   // if(     time1 < vertices[stoi(v)].sig[vertices[stoi(v)].sig.size()-1].time ){
-                     
-                //     // if((time2 + time1 < vertices[stoi(v)].sig[vertices[stoi(v)].sig.size()-1].time) ){
-                //       
-                //     
-                      
-                //     // }
-                // // }
-                // }
-            // }
-
-                // cout<<
-
                 
         }
-        // }
-      //   cout << "shortest path in terms of time from "<< src<<" to "<< dest<< " is: "<< endl; 
-      //  cout << vertices[name2id(dest)].sig.back().cost << " " << vertices[name2id(dest)].sig.back().time<< " " <<vertices[name2id(dest)].name<< endl;
+  
+          if(vertices[name2id(dest)].sig.empty()){
+           cout<< "There does not exist any path from " << src <<" to " <<dest << endl;
+           return;
+          }
          cout<< "Following is the entire tradoff curve of (cost,time) pairs of non dominated paths from "<< src <<" to "<< dest<<endl;
          for(signature &s : vertices[name2id(dest)].sig ){
           cout << "("<<s.cost <<", " << s.time << ")" << endl;
           // << vertices[name2id(dest)].name << endl;
         }
-        //  for(signature &s : vertices[name2id(src)].sig) {
-        //   cout << s.cost <<" " << s.time << " "<< vertices[name2id(dest)].name << endl;
-        // }
-        std::cout << "\n";
+         std::cout << "\n";
+        // now, print fastest path within budget
 
-        
+        // for(signature &s : vertices[name2id(dest)].sig ){
+        //   if(budget <  s)
+        // }
+       
+        int b ;
+        // while(b <= stoi(budget)){
+          // for(int i = 0 ; i < vertices[name2id(dest)].sig.size() ; ++i){
+                if(stoi(budget) < vertices[name2id(dest)].sig[0].cost){
+                  cout << "Not enough budget to go from "<< src << " to "<< dest<< endl;
+                  return;
+                }
+                else if (stoi(budget) >= vertices[name2id(dest)].sig.back().cost){
+                  cout << "Fastest way to go from "<< src << " to "<< dest << " within your budget is "<< endl;
+                  cout << "("<< vertices[name2id(dest)].sig.back().cost <<", " << vertices[name2id(dest)].sig.back().time <<")"<<endl;
+                }
+                else{
+                  int b =0;
+                  int i = 0 ;
+                  int c,t;
+                  while (stoi(budget) > b){
+                      b = vertices[name2id(dest)].sig[i].cost;
+                      if(b > stoi(budget)) {break;}
+                      i++;
+                  }
+                  cout << "Fastest way to go from "<< src << " to "<< dest << " within your budget is "<< endl;
+                  cout << "("<< vertices[name2id(dest)].sig[i-1].cost<<", " << vertices[name2id(dest)].sig[i-1].time <<")"<<endl;
+                }
+
     }
 
 };
