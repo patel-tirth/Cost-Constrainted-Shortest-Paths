@@ -23,18 +23,7 @@ int main(int argc, char *argv[]){
 //   std::cout << "\nADJACENCY-LIST REPRESENTATION:\n\n";
 //   g.display();
   g.cpath(argv[2],argv[3],argv[4]);
-//   std::cout << "\nEND ADJACENCY LIST:\n\n";
 
-//   if(!g.bfs(argv[2], bfs_rpt)) {
-//     std::cout << "bfs failed -- bad source vertex name '" <<
-//       argv[2] << "'\n";
-//     return 0;
-//   }
-//   else {
-//     std::cout << "\nBFS REPORT:\n\n";
-//     g.disp_report(bfs_rpt, true);
-//     std::cout << "\nEND BFS REPORT\n\n";
-//   }
 
   return 0;
 }

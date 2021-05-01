@@ -145,14 +145,35 @@ class graph {
     //     : vertex_id {vtx_id}, cost { _weight}, time {_wt2}
     //   { }
     // };
+    struct parents {
+      int vertex_id;
+      double c1;
+      double t1;
+      string sigVer;
+      parents(int vtx_id=0 , double _c1 = 0.0, double _t1=0.0, string _sigVer = "")
+      : vertex_id {vtx_id} , c1{_c1} , t1{_t1}, sigVer{_sigVer}
+      { }
+    };
     struct signature{
       double cost;
       double time;
-      signature ( double _weight=1.0, double _wt2=1.0) 
-        :  cost { _weight}, time {_wt2}
+      string v;
+     vector<int> par;
+      signature ( double _weight=1.0, double _wt2=1.0 , string _v ="" ) 
+        :  cost { _weight}, time {_wt2}, v {_v}
       { }
     };
 
+    struct signature2{
+      double cost;
+      double time;
+      string v;
+    //  vector<int> par;
+      signature2 ( double _weight=1.0, double _wt2=1.0 , string _v ="" ) 
+        :  cost { _weight}, time {_wt2}, v {_v}
+      { }
+    };
+    
     // a vertex struct stores all info about a particular
     //    vertex:  name, ID, incoming and outgoing edges.
     struct vertex {
@@ -160,8 +181,9 @@ class graph {
       vector<edge> outgoing;
       vector<edge> incoming;
       vector<signature> sig;
+      vector<signature2> sig2;
       string name;
-     
+      vector<parents> par;
 
       vertex ( int _id=0, string _name="") 
         : id { _id }, name { _name } 
@@ -821,26 +843,44 @@ class graph {
         return (c1 > c2 || (c1 == c2 && t1 < t2));
     }
 };
+ //  cost constrained shortest path function
     void cpath(string src, string dest, string budget){
 
         typedef std::tuple<double, double, string> tpl;   // cost, time , vertex
         std::priority_queue< tpl, vector <tpl> , myQ> pq;     // min heap    
+
         pq.push(tpl(0,0,src));
+
      while (pq.empty() == false)
     {
          tpl t = pq.top();
-
          pq.pop();
         //  cout<< get<0>(t) <<" "<< get<1>(t) << " "<< get<2>(t) <<endl;
             int i = name2id(get<2>(t));
-            if(vertices[i].sig.empty()){
-                 vertices[i].sig.push_back(signature(get<0>(t), get<1>(t)));
+            if(vertices[i].sig.empty()  ){
+                // 
+                 vertices[i].sig.push_back(signature(get<0>(t), get<1>(t),get<2>(t)));
+                    //  signature2 s2 = {get<0>(t), get<1>(t), get<2>(t)};
+                   
+                 for(edge &e :vertices[i].outgoing){
+                   vertices[e.vertex_id].sig2.push_back(signature2(get<0>(t), get<1>(t),get<2>(t)));
+                  }
+              
             }
             else {
-              if(vertices[i].sig.back().time > get<1>(t)){
-                  vertices[i].sig.push_back(signature(get<0>(t), get<1>(t)));
+              if(vertices[i].sig.back().time > get<1>(t) ){
+                  // signature s = {get<0>(t),get<1>(t),get<2>(t)};
+
+                  vertices[i].sig.push_back(signature(get<0>(t), get<1>(t), get<2>(t)));
+              
+                    for(edge &e :vertices[i].outgoing){
+                     vertices[e.vertex_id].sig2.push_back(signature2(get<0>(t), get<1>(t),get<2>(t)));
+
+                  }
+                  
               }
             }
+            
             for(edge &e : vertices[i].outgoing) {  // for each outgoing edge for vertex 
                     double cost1 = get<0>(t);      
                     double time1 = get<1>(t);
@@ -850,7 +890,7 @@ class graph {
                              
                 if(vertices[e.vertex_id].sig.empty() ) {    // if trade off curve for neighbor is empty
                       pq.push(tpl(cost1+cost2,time1+time2,v));
-          
+                    
                 }
             }
                 
@@ -867,36 +907,39 @@ class graph {
         }
          std::cout << "\n";
         // now, print fastest path within budget
-
-        // for(signature &s : vertices[name2id(dest)].sig ){
-        //   if(budget <  s)
-        // }
-       
+     
         int b ;
-        // while(b <= stoi(budget)){
-          // for(int i = 0 ; i < vertices[name2id(dest)].sig.size() ; ++i){
+        int i = 0 ;
+       
                 if(stoi(budget) < vertices[name2id(dest)].sig[0].cost){
                   cout << "Not enough budget to go from "<< src << " to "<< dest<< endl;
                   return;
                 }
                 else if (stoi(budget) >= vertices[name2id(dest)].sig.back().cost){
-                  cout << "Fastest way to go from "<< src << " to "<< dest << " within your budget is "<< endl;
+                  cout << "Fastest (cost,time) pair to go from "<< src << " to "<< dest << " within your budget of "<< budget<< endl;
                   cout << "("<< vertices[name2id(dest)].sig.back().cost <<", " << vertices[name2id(dest)].sig.back().time <<")"<<endl;
                 }
                 else{
                   int b =0;
-                  int i = 0 ;
+                  
                   int c,t;
                   while (stoi(budget) > b){
                       b = vertices[name2id(dest)].sig[i].cost;
                       if(b > stoi(budget)) {break;}
                       i++;
                   }
-                  cout << "Fastest way to go from "<< src << " to "<< dest << " within your budget is "<< endl;
+                  cout << "Fastest way to go from "<< src << " to "<< dest << " within your budget of "<< budget<< endl;
                   cout << "("<< vertices[name2id(dest)].sig[i-1].cost<<", " << vertices[name2id(dest)].sig[i-1].time <<")"<<endl;
                 }
-
+                cout<< endl;
+            cout << "Path is as follows: " << endl ;
+            
+            for(signature2 &s : vertices[name2id(dest)].sig2){
+              cout << s.v<< "->";
+            }
+            cout << dest <<endl;
+           
     }
-
+     
 };
 
